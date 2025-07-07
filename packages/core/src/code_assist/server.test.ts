@@ -134,8 +134,7 @@ describe('CodeAssistServer', () => {
       'loadCodeAssist',
       expect.any(Object),
     );
-    expect(response.cloudaicompanionProject).toBe('projects/test');
-    expect(response.currentTier?.id).toBe('free-tier');
+    expect(response).toEqual(mockResponse);
   });
 
   it('should return 0 for countTokens', async () => {
