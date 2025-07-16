@@ -116,7 +116,7 @@ describe('CodeAssistServer', () => {
     const server = new CodeAssistServer(client, 'test-project');
     const mockResponse = {
       currentTier: {
-        id: 'free-tier',
+        id: UserTierId.FREE,
         name: 'Free',
         description: 'free tier',
       },
