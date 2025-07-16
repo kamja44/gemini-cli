@@ -7,6 +7,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { CodeAssistServer } from './server.js';
 import { OAuth2Client } from 'google-auth-library';
+import { UserTierId } from './types.js';
 
 vi.mock('google-auth-library');
 
