@@ -4,22 +4,64 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { GenerateContentResponse, PartListUnion } from '@google/genai';
+import { GenerateContentResponse, PartListUnion, Part } from '@google/genai';
 
-export function partToString(part: PartListUnion): string {
-  if (!part) {
+/**
+ * Converts a PartListUnion into a string.
+ * If verbose is true, includes summary representations of non-text parts.
+ */
+export function partToString(
+  value: PartListUnion,
+  options?: { verbose?: boolean },
+): string {
+  if (!value) {
     return '';
   }
-  if (typeof part === 'string') {
-    return part;
+  if (typeof value === 'string') {
+    return value;
   }
-  if (Array.isArray(part)) {
-    return part.map(partToString).join('');
+  if (Array.isArray(value)) {
+    return value.map((part) => partToString(part, options)).join('');
   }
-  if ('text' in part) {
-    return part.text ?? '';
+
+  // Cast to Part, assuming it might contain project-specific fields
+  const part = value as Part & {
+    videoMetadata?: unknown;
+    thought?: string;
+    codeExecutionResult?: unknown;
+    executableCode?: unknown;
+  };
+
+  if (options?.verbose) {
+    if (part.videoMetadata !== undefined) {
+      return `[Video Metadata]`;
+    }
+    if (part.thought !== undefined) {
+      return `[Thought: ${part.thought}]`;
+    }
+    if (part.codeExecutionResult !== undefined) {
+      return `[Code Execution Result]`;
+    }
+    if (part.executableCode !== undefined) {
+      return `[Executable Code]`;
+    }
+
+    // Standard Part fields
+    if (part.fileData !== undefined) {
+      return `[File Data]`;
+    }
+    if (part.functionCall !== undefined) {
+      return `[Function Call: ${part.functionCall.name}]`;
+    }
+    if (part.functionResponse !== undefined) {
+      return `[Function Response: ${part.functionResponse.name}]`;
+    }
+    if (part.inlineData !== undefined) {
+      return `<${part.inlineData.mimeType}>`;
+    }
   }
-  return '';
+
+  return part.text ?? '';
 }
 
 export function getResponseText(
